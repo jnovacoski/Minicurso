@@ -1,11 +1,3 @@
-# Minicurso
-Novo repositorio, criado com o intuito de aprender melhor o que eh, e como funciona o git, nao o github.
+# Computacao Natural - Redes neurais artificiais - Series Temporais
 
-Atraves do minicurso da Unicentro.
-
-Agora, fizemos mais uma alteracao no arquivo, para ver o que acontece.
-
-MAIS UMA
-MAIS UMA
-MAIS UMA
-MAIS UMA
+O trabalho tem como objetivo a previsão de séries temporais, em específico, previsão de variação de preços nos índices da bolsa da bovespa, utilizando redes neurais artificiais, com linguagem Python, e as APIs tensorflow, keras, pandas, matplotlib, entre outros.
