@@ -10,18 +10,18 @@ mpl.rcParams['axes.grid'] = False
 
 df = pd.read_csv('jena.csv')
 
-def univariate_data(dataset, start_index, end_index, history_size, target_size):
+def univariate_data(dataset, indice_inicio, indice_final, tamanho_historico, target_size):
   data = []
   labels = []
 
-  start_index = start_index + history_size
-  if end_index is None:
-    end_index = len(dataset) - target_size
+  indice_inicio = indice_inicio + tamanho_historico
+  if indice_final is None:
+    indice_final = len(dataset) - target_size
 
-  for i in range(start_index, end_index):
-    indices = range(i-history_size, i)
-    # Reshape data from (history_size,) to (history_size, 1)
-    data.append(np.reshape(dataset[indices], (history_size, 1)))
+  for i in range(indice_inicio, indice_final):
+    indices = range(i-tamanho_historico, i)
+    # Reshape data from (tamanho_historico,) to (tamanho_historico, 1)
+    data.append(np.reshape(dataset[indices], (tamanho_historico, 1)))
     labels.append(dataset[i+target_size])
   return np.array(data), np.array(labels)
 
