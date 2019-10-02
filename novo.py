@@ -10,23 +10,15 @@ del df['volume']
 df['data'] = pd.Categorical(df['data'])
 df['data'] = df.data.cat.codes
 
-ultimo = df.pop('ultimo')
+uni_data = df['ultimo']
+uni_data.index = df['data']
 
-dataset = tf.data.Dataset.from_tensor_slices((df.values, ultimo.values))
+uni_data  = uni_data.values
 
-train_dataset = dataset.shuffle(len(df)).batch(1)
+uni_train_mean = uni_data.mean()
+uni_train_std = uni_data.std()
 
-def get_compiled_model():
-  model = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=(((5,), ()))),
-    tf.keras.layers.Dense(10, activation='relu'),
-    tf.keras.layers.Dense(10, activation='relu'),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-  ])
 
-  model.compile(optimizer='adam',
-                loss='binary_crossentropy',
-                metrics=['accuracy'])
-  return model
-model = get_compiled_model(
-print(dataset)
+uni_data = (uni_data-uni_train_mean)/uni_train_std
+print(uni_data)
+print("Tamanho " + str(len(uni_data)))

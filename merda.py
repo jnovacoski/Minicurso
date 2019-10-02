@@ -85,5 +85,5 @@ def show_plot(plot_data, delta, title):
   plt.xlabel('Time-Step')
   return plt
 
-show_plot([x_train_uni[0], y_train_uni[0]], 0, 'Sample Example')
+show_plot([x_train_uni[0], y_train_uni[0]], 0, 'Sample Example').show()
 
