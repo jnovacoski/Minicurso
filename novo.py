@@ -1,7 +1,56 @@
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-#from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
+tf.compat.v1.enable_eager_execution()
+def univariate_data(dataset, indice_inicio, indice_final, tamanho_historico, target_size):
+  data = []
+  labels = []
+
+  indice_inicio = indice_inicio + tamanho_historico
+  if indice_final is None:
+    indice_final = len(dataset) - target_size
+
+  for i in range(indice_inicio, indice_final):
+    indices = range(i-tamanho_historico, i)
+    # Reshape data from (tamanho_historico,) to (tamanho_historico, 1)
+    data.append(np.reshape(dataset[indices], (tamanho_historico, 1)))
+    labels.append(dataset[i+target_size])
+  return np.array(data), np.array(labels)
+
+"""
+print(x_train_uni)
+print(len(x_train_uni))
+print(y_train_uni)
+print(len(y_train_uni))
+print(len(uni_data))
+"""
+def show_plot(plot_data, delta, title):
+  labels = ['History', 'True Future', 'Model Prediction']
+  marker = ['.-', 'rx', 'go']
+  time_steps = create_time_steps(plot_data[0].shape[0])
+  if delta:
+    future = delta
+  else:
+    future = 0
+
+  plt.title(title)
+  for i, x in enumerate(plot_data):
+    if i:
+      plt.plot(future, plot_data[i], marker[i], markersize=10,
+               label=labels[i])
+    else:
+      plt.plot(time_steps, plot_data[i].flatten(), marker[i], label=labels[i])
+  plt.legend()
+  plt.xlim([time_steps[0], (future+5)*2])
+  plt.xlabel('Time-Step')
+  return plt
+
+def create_time_steps(length):
+  time_steps = []
+  for i in range(-length, 0, 1):
+    time_steps.append(i)
+  return time_steps
 
 df = pd.read_csv('indice.csv')
 # Removendo do banco a coluna Volume, cujo tipo eh object.
@@ -16,26 +65,39 @@ uni_data = df['ultimo']
 uni_data.index = df['data']
 uni_data  = uni_data.values
 
-# Normalizando os dados
-
 uni_train_mean = uni_data.mean()
 uni_train_std = uni_data.std()
 uni_data = (uni_data-uni_train_mean)/uni_train_std
 
-""" Testes
-print(uni_data)
-print("Tamanho " + str(len(uni_data)))
+x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),5,0)
+x_val_uni,y_val_uni = univariate_data(uni_data, 0, len(uni_data),5,0)
 
-def retorna_dados(dataset):
-  dados = []
-  rotulo = []
+# Aqui comeca aparte de Redes Neurais.
 
-"""
-dados = []
+BATCH_SIZE = 256
+BUFFER_SIZE = 10000
 
-for i in range(0, 30):
-    indices = range(0,50)
-    dados.append(np.reshape(df[indices], (20,1)))
+train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
+train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
 
-print(dados)
+val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
+val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
+
+# Criando um modelo simples e compilando, com entrada de 8 neuronios LSTM e saida de um neuronio Dense
+
+simple_lstm_model = tf.keras.models.Sequential([
+    tf.keras.layers.LSTM(1, input_shape=x_train_uni.shape[-2:]),
+    tf.keras.layers.Dense(80),
+    tf.keras.layers.Dense(80),
+    tf.keras.layers.Dense(1)
+])
+
+simple_lstm_model.compile(optimizer='adam', loss='mae')
+
+# Treinando o modelo com os dados da bovespa.
+simple_lstm_model.fit(train_univariate, epochs = 10, steps_per_epoch=500,validation_data=val_univariate, validation_steps=50)
+for x, y in val_univariate.take(3):
+  plot = show_plot([x[0].numpy(), y[0].numpy(),
+                    simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
+  plot.show()
 
