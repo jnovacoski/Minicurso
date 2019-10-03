@@ -27,7 +27,7 @@ print(len(uni_data))
 """
 def show_plot(plot_data, delta, title):
   labels = ['History', 'True Future', 'Model Prediction']
-  marker = ['.-', 'rx', 'go']
+  marker = ['.-', '.', 'go']
   time_steps = create_time_steps(plot_data[0].shape[0])
   if delta:
     future = delta
@@ -65,12 +65,15 @@ uni_data = df['ultimo']
 uni_data.index = df['data']
 uni_data  = uni_data.values
 
-uni_train_mean = uni_data.mean()
-uni_train_std = uni_data.std()
-uni_data = (uni_data-uni_train_mean)/uni_train_std
+# Normalizando os dados
+maior = uni_data.max()
+uni_data = uni_data/maior
+#uni_train_mean = uni_data.mean()
+#uni_train_std = uni_data.std()
+#uni_data = (uni_data-uni_train_mean)/uni_train_std
 
-x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),5,0)
-x_val_uni,y_val_uni = univariate_data(uni_data, 0, len(uni_data),5,0)
+x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),20,0)
+x_val_uni,y_val_uni = univariate_data(uni_data, 0, len(uni_data),20,0)
 
 # Aqui comeca aparte de Redes Neurais.
 
@@ -86,8 +89,7 @@ val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 # Criando um modelo simples e compilando, com entrada de 8 neuronios LSTM e saida de um neuronio Dense
 
 simple_lstm_model = tf.keras.models.Sequential([
-    tf.keras.layers.LSTM(1, input_shape=x_train_uni.shape[-2:]),
-    tf.keras.layers.Dense(80),
+    tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
     tf.keras.layers.Dense(80),
     tf.keras.layers.Dense(1)
 ])
@@ -95,9 +97,12 @@ simple_lstm_model = tf.keras.models.Sequential([
 simple_lstm_model.compile(optimizer='adam', loss='mae')
 
 # Treinando o modelo com os dados da bovespa.
-simple_lstm_model.fit(train_univariate, epochs = 10, steps_per_epoch=500,validation_data=val_univariate, validation_steps=50)
+simple_lstm_model.fit(train_univariate, epochs = 8, steps_per_epoch=400,validation_data=val_univariate, validation_steps=100)
 for x, y in val_univariate.take(3):
+  predict = simple_lstm_model.predict(x)
+  x *= maior
+  y *= maior
+  predict *= maior
   plot = show_plot([x[0].numpy(), y[0].numpy(),
-                    simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
+                   predict[0]], 0, 'Simple LSTM model')
   plot.show()
-
