@@ -18,15 +18,8 @@ def univariate_data(dataset, indice_inicio, indice_final, tamanho_historico, tar
     labels.append(dataset[i+target_size])
   return np.array(data), np.array(labels)
 
-"""
-print(x_train_uni)
-print(len(x_train_uni))
-print(y_train_uni)
-print(len(y_train_uni))
-print(len(uni_data))
-"""
 def show_plot(plot_data, delta, title):
-  labels = ['History', 'True Future', 'Model Prediction']
+  labels = ['Historico', 'Realidade', 'Predicao do Modelo']
   marker = ['.-', '.', 'go']
   time_steps = create_time_steps(plot_data[0].shape[0])
   if delta:
@@ -65,15 +58,22 @@ uni_data = df['ultimo']
 uni_data.index = df['data']
 uni_data  = uni_data.values
 
-# Normalizando os dados
+"""
+# Normalizando os dados(Reais entre 0 e 1)
 maior = uni_data.max()
 uni_data = uni_data/maior
-#uni_train_mean = uni_data.mean()
-#uni_train_std = uni_data.std()
-#uni_data = (uni_data-uni_train_mean)/uni_train_std
 
-x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),20,0)
-x_val_uni,y_val_uni = univariate_data(uni_data, 0, len(uni_data),20,0)
+"""
+# Normalizando os dados(Reais entre 0 e 1)
+uni_train_mean = uni_data.mean()
+uni_train_std = uni_data.std()
+uni_data = (uni_data-uni_train_mean)/uni_train_std
+print(uni_data.max())
+print(uni_data.min())
+maior = uni_train_std
+
+x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),100,0)
+x_val_uni,y_val_uni = univariate_data(uni_data, 0, len(uni_data),100,0)
 
 # Aqui comeca aparte de Redes Neurais.
 
@@ -90,19 +90,36 @@ val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 simple_lstm_model = tf.keras.models.Sequential([
     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-    tf.keras.layers.Dense(80),
+    tf.keras.layers.Dense(80, activation='sigmoid'),
+    tf.keras.layers.Dense(30, activation='tanh'),
     tf.keras.layers.Dense(1)
 ])
 
 simple_lstm_model.compile(optimizer='adam', loss='mae')
 
-# Treinando o modelo com os dados da bovespa.
-simple_lstm_model.fit(train_univariate, epochs = 8, steps_per_epoch=400,validation_data=val_univariate, validation_steps=100)
-for x, y in val_univariate.take(3):
+# # Treinando o modelo com os dados da bovespa.
+simple_lstm_model.fit(train_univariate, epochs = 4, steps_per_epoch=200,validation_data=val_univariate, validation_steps=100)
+simple_lstm_model.save('modelo1.h5')
+
+#simple_lstm_model = tf.keras.models.load_model('modelo1.h5')
+
+
+
+for x, y in val_univariate.take(10):
   predict = simple_lstm_model.predict(x)
   x *= maior
   y *= maior
   predict *= maior
-  plot = show_plot([x[0].numpy(), y[0].numpy(),
-                   predict[0]], 0, 'Simple LSTM model')
+  x += uni_train_mean
+  y += uni_train_mean
+  predict += uni_train_mean
+  plot = show_plot([x[255].numpy(), y[255].numpy(),
+                predict[255]], 0, 'Modelo LSTM Simples')
   plot.show()
+  media = 0.0
+  for k in range(len(x)):
+    media += abs(y[k].numpy() - predict[k])
+  media = media / 256
+  print(media)
+  print("MAIOR DEMINH DE VAEFDCF: " + str(np.amax(x.numpy())))
+    
