@@ -2,6 +2,53 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import os
+
+def criarDiretorio():
+  numero = 0
+  dirName = "Modelo" + str(numero)
+  while(os.path.exists(dirName)):
+    numero += 1        
+    dirName = "Modelo"+str(numero)
+
+  
+  os.mkdir(dirName)
+  return dirName
+  
+
+def plotarESalvar():
+  simple_lstm_model = tf.keras.load_model('modelo1.h5')
+  count = 0
+  caminho = criarDiretorio()
+  with open("./"+caminho + '/modelo.txt','w') as fh:
+      # Pass the file handle in as a lambda function to make it callable
+      simple_lstm_model.summary(print_fn=lambda x: fh.write(x + '\n'))
+  fh.close()
+
+  f = open("./"+caminho + '/dados.txt','w+')
+  for x, y in val_univariate.take(10):
+    predict = simple_lstm_model.predict(x)
+    x *= maior
+    y *= maior
+    predict *= maior
+    x += uni_train_mean
+    y += uni_train_mean
+    predict += uni_train_mean
+    plot = show_plot([x[255].numpy(), y[255].numpy(),
+                  predict[255]], 0, 'Modelo LSTM Simples')
+    plot.savefig("./"+caminho+"/Imagem-"+str(count)+".png")
+    plot.clf();
+    count += 1
+    media = 0.0
+    for k in range(len(x)):
+      media += abs(y[k].numpy() - predict[k])
+    media = media / 256
+    f.write("Maior valor da serie: " + str(np.amax(x.numpy())))
+    f.write("\nMenor valor da serie: " + str(np.amin(x.numpy())))  
+    f.write("\nErro medio: "+ str(media)+"\n\n")
+    
+  f.close()    
+
 tf.compat.v1.enable_eager_execution()
 def univariate_data(dataset, indice_inicio, indice_final, tamanho_historico, target_size):
   data = []
@@ -88,38 +135,21 @@ val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 # Criando um modelo simples e compilando, com entrada de 8 neuronios LSTM e saida de um neuronio Dense
 
-simple_lstm_model = tf.keras.models.Sequential([
+modelo = tf.keras.models.Sequential([
     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-    tf.keras.layers.Dense(80, activation='sigmoid'),
-    tf.keras.layers.Dense(30, activation='tanh'),
+    tf.keras.layers.Dense(10),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(10),
     tf.keras.layers.Dense(1)
 ])
 
-simple_lstm_model.compile(optimizer='adam', loss='mae')
+modelo.compile(optimizer='adam', loss='mae')
 
 # # Treinando o modelo com os dados da bovespa.
-simple_lstm_model.fit(train_univariate, epochs = 4, steps_per_epoch=200,validation_data=val_univariate, validation_steps=100)
-simple_lstm_model.save('modelo1.h5')
+modelo.fit(train_univariate, epochs = 50, steps_per_epoch=2000,validation_data=val_univariate, validation_steps=200)
+modelo.save('modelo1.h5')
 
-#simple_lstm_model = tf.keras.models.load_model('modelo1.h5')
+# modelo = tf.keras.models.load_model('modelo1.h5')
 
 
 
-for x, y in val_univariate.take(10):
-  predict = simple_lstm_model.predict(x)
-  x *= maior
-  y *= maior
-  predict *= maior
-  x += uni_train_mean
-  y += uni_train_mean
-  predict += uni_train_mean
-  plot = show_plot([x[255].numpy(), y[255].numpy(),
-                predict[255]], 0, 'Modelo LSTM Simples')
-  plot.show()
-  media = 0.0
-  for k in range(len(x)):
-    media += abs(y[k].numpy() - predict[k])
-  media = media / 256
-  print(media)
-  print("MAIOR DEMINH DE VAEFDCF: " + str(np.amax(x.numpy())))
-    

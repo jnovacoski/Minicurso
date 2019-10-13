@@ -1,0 +1,40 @@
+Maior valor da serie: 105817.06
+Menor valor da serie: 69814.74
+Media: [949.59814]
+
+Maior valor da serie: 87652.64
+Menor valor da serie: 60761.74
+Media: [618.27246]
+
+Maior valor da serie: 71329.85
+Menor valor da serie: 48096.24
+Media: [626.26465]
+
+Maior valor da serie: 59323.83
+Menor valor da serie: 37497.48
+Media: [568.0399]
+
+Maior valor da serie: 61895.98
+Menor valor da serie: 46907.68
+Media: [631.2616]
+
+Maior valor da serie: 58992.11
+Menor valor da serie: 44965.66
+Media: [541.1824]
+
+Maior valor da serie: 67730.31
+Menor valor da serie: 45044.03
+Media: [597.595]
+
+Maior valor da serie: 69837.52
+Menor valor da serie: 48668.29
+Media: [675.8794]
+
+Maior valor da serie: 72995.69
+Menor valor da serie: 58192.08
+Media: [637.80585]
+
+Maior valor da serie: 71784.77
+Menor valor da serie: 36234.69
+Media: [707.46423]
+
