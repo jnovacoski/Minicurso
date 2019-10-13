@@ -17,7 +17,7 @@ def criarDiretorio():
   
 
 def plotarESalvar():
-  simple_lstm_model = tf.keras.load_model('modelo1.h5')
+  simple_lstm_model = tf.keras.models.load_model('modelo1.h5')
   count = 0
   caminho = criarDiretorio()
   with open("./"+caminho + '/modelo.txt','w') as fh:
@@ -67,7 +67,7 @@ def univariate_data(dataset, indice_inicio, indice_final, tamanho_historico, tar
 
 def show_plot(plot_data, delta, title):
   labels = ['Historico', 'Realidade', 'Predicao do Modelo']
-  marker = ['.-', '.', 'go']
+  marker = ['.-', '.', '.']
   time_steps = create_time_steps(plot_data[0].shape[0])
   if delta:
     future = delta
@@ -135,21 +135,22 @@ val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 # Criando um modelo simples e compilando, com entrada de 8 neuronios LSTM e saida de um neuronio Dense
 
-modelo = tf.keras.models.Sequential([
-    tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-    tf.keras.layers.Dense(10),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(10),
-    tf.keras.layers.Dense(1)
-])
+# modelo = tf.keras.models.Sequential([
+#     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
+#     tf.keras.layers.Dense(10),
+#     tf.keras.layers.Dropout(0.2),
+#     tf.keras.layers.Dense(10),
+#     tf.keras.layers.Dense(1)
+# ])
 
-modelo.compile(optimizer='adam', loss='mae')
+# modelo.compile(optimizer='adam', loss='mae')
 
 # # Treinando o modelo com os dados da bovespa.
-modelo.fit(train_univariate, epochs = 50, steps_per_epoch=2000,validation_data=val_univariate, validation_steps=200)
-modelo.save('modelo1.h5')
+# modelo.fit(train_univariate, epochs = 50, steps_per_epoch=4000,validation_data=val_univariate, validation_steps=200)
+# modelo.save('modelo1.h5')
 
-# modelo = tf.keras.models.load_model('modelo1.h5')
+
+plotarESalvar()
 
 
 
