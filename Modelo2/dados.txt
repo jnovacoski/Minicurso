@@ -1,0 +1,40 @@
+Maior valor da serie: 105817.06
+Menor valor da serie: 69814.74
+Erro medio: [1325.8511]
+
+Maior valor da serie: 87652.64
+Menor valor da serie: 60761.74
+Erro medio: [886.4384]
+
+Maior valor da serie: 71329.85
+Menor valor da serie: 48096.24
+Erro medio: [650.6055]
+
+Maior valor da serie: 59323.83
+Menor valor da serie: 37497.48
+Erro medio: [585.7083]
+
+Maior valor da serie: 61895.98
+Menor valor da serie: 46907.68
+Erro medio: [641.0608]
+
+Maior valor da serie: 58992.11
+Menor valor da serie: 44965.66
+Erro medio: [548.3685]
+
+Maior valor da serie: 67730.31
+Menor valor da serie: 45044.03
+Erro medio: [661.8224]
+
+Maior valor da serie: 69837.52
+Menor valor da serie: 48668.29
+Erro medio: [746.7074]
+
+Maior valor da serie: 72995.69
+Menor valor da serie: 58192.08
+Erro medio: [825.70544]
+
+Maior valor da serie: 71784.77
+Menor valor da serie: 36234.69
+Erro medio: [742.8669]
+
