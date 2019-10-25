@@ -4,6 +4,20 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import os
 
+def criarModelo(train_univariate, val_univariate):
+  modelo = tf.keras.models.Sequential([
+    tf.keras.layers.LSTM(16, input_shape=x_train_uni.shape[-2:]),
+    tf.keras.layers.Dense(32),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(1)
+  ])
+
+  modelo.compile(optimizer='adam', loss='mae')
+
+  # Treinando o modelo com os dados da bovespa.
+  modelo.fit(train_univariate, epochs = 10, steps_per_epoch=500,validation_data=val_univariate, validation_steps=200)
+  modelo.save('modelo1.h5')
+
 def criarDiretorio():
   numero = 0
   dirName = "Modelo" + str(numero)
@@ -111,12 +125,10 @@ maior = uni_data.max()
 uni_data = uni_data/maior
 
 """
-# Normalizando os dados(Reais entre 0 e 1)
+
 uni_train_mean = uni_data.mean()
 uni_train_std = uni_data.std()
 uni_data = (uni_data-uni_train_mean)/uni_train_std
-print(uni_data.max())
-print(uni_data.min())
 maior = uni_train_std
 
 x_train_uni,y_train_uni = univariate_data(uni_data, 0, len(uni_data),100,0)
@@ -135,21 +147,9 @@ val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
 
 # Criando um modelo simples e compilando, com entrada de 8 neuronios LSTM e saida de um neuronio Dense
 
-# modelo = tf.keras.models.Sequential([
-#     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-#     tf.keras.layers.Dense(10),
-#     tf.keras.layers.Dropout(0.2),
-#     tf.keras.layers.Dense(10),
-#     tf.keras.layers.Dense(1)
-# ])
-
-# modelo.compile(optimizer='adam', loss='mae')
-
-# # Treinando o modelo com os dados da bovespa.
-# modelo.fit(train_univariate, epochs = 50, steps_per_epoch=4000,validation_data=val_univariate, validation_steps=200)
-# modelo.save('modelo1.h5')
 
 
+# criarModelo(train_univariate, val_univariate)
 plotarESalvar()
 
 

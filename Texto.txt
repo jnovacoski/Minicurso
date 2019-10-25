@@ -1,0 +1,13 @@
+O programa tem algumas funções:
+plotarESalvar().
+Cria uma pasta, e coloca os dados das predições do modelo nela, entre eles 10 imagens .png com os dados de previsão, o que realmente aconteceu, e alguns dados estatísticos, como média de erro. Na mesma pasta, um arquivo de texto com dados básicos do modelo(camadas da rede) e outro arquivo com os dados das 10 imagens, com o maior valor, o menor, e a média de erro na predição.
+univariate_data().
+Recebe o dataset que veio do arquivo csv e remodela os dados para se adequar as necessidades do modelo, ajustando a label como sendo o ultimo dia da sequencia, colocando os dias num array de tamanho especificado na funcao, que cria tambem alguns arrays que serao utilizados para teste do modelo se esta bom ou nao.
+show_plot().
+Usando a matplotpy recebe os dados das previsoes e a partir de onde foi aplicado, mostrando um grafico com os dias anteriores, a previsao e o resultado real, para se ter uma ideia se o modelo funcionou bem ou nao.
+create_time_steps().
+cria uma estrutura que o plot precisa para saber a quantidade de dias que foi analisada e e usada pelo matplotpy para exibir o grafico corretamente.
+
+A maior dificuldade foi de entender o modelo para ser possível de fazer modificações que se adaptassem às nossas necessidades.
+Foram utilizados dados do site https://br.investing.br da bolsa da bovespa, dados diarios a partir da data de 27 de dezembro de 2000 (Alguns dias nao constam no banco) contendo um total de 4673 linhas com dados. Foi utilizado o fechamento do dia como dado principal para utilizacao de treino para o modelo.
+As medias de erros do modelo giravam em torno de 1~2%, com uma pequena melhoria quando o modelo recebeu um array maior de dados para treino(com uma diferenca muito pequena a partir de 20 dias anteriores, e atualmente, o modelo trabalha com um array de 100 dias anteriores).
